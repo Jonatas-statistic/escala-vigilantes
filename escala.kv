@@ -1,0 +1,32 @@
+#:kivy 1.0.9
+
+<MenuPage>:
+    orientation: 'vertical'
+    Button:
+        text: 'Vigilantes'
+        font_size: 150
+    Button:
+        text: 'Calendário'
+        font_size: 150
+
+
+<VigilantName>:
+    orientation: 'horizontal'
+    Label:
+        text: root.letter
+        font_size: 75
+        size_hint_x: 0.15 
+    TextInput:
+        font_size: 50
+
+<VigilantsPage>:
+    orientation: 'vertical'
+
+
+<EscalaLayout>:
+    orientation: 'vertical'
+    Button:
+        text: "Funcionários"
+    
+    Button:
+        text: "Calendário"
