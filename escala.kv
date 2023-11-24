@@ -1,13 +1,20 @@
 #:kivy 1.0.9
 
-<MenuPage>:
-    orientation: 'vertical'
-    Button:
-        text: 'Vigilantes'
-        font_size: 150
-    Button:
-        text: 'Calendário'
-        font_size: 150
+<MenuScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            text: 'Vigilantes'
+            font_size: 150
+            on_press: 
+                root.manager.current = 'vigilants'
+                root.manager.transition.direction = 'left'
+        Button:
+            text: 'Calendário'
+            font_size: 150
+            on_press: 
+                root.manager.current = 'calendar'
+                root.manager.transition.direction = 'left'
 
 
 <VigilantName>:
@@ -17,16 +24,125 @@
         font_size: 75
         size_hint_x: 0.15 
     TextInput:
+        id: name_imput
+        text: root.name
         font_size: 50
 
-<VigilantsPage>:
-    orientation: 'vertical'
+<VigilantsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        ActionBar:
+            ActionView:
+                ActionPrevious:
+                    title: 'Vigilantes'
+                    on_press: 
+                        root.manager.current = 'menu'
+                        root.manager.transition.direction = 'right'
+        VigilantsPage:
+            id: vigilants
+            orientation: 'vertical'
+        Button:
+            text: 'Salvar'
+            text_align: 'center'
+            font_size: 50
+            size_hint_y: None
+            height: 75
+            on_press: root.update_vigilants_names()
 
 
-<EscalaLayout>:
-    orientation: 'vertical'
-    Button:
-        text: "Funcionários"
-    
-    Button:
-        text: "Calendário"
+<DayButton>:
+    background_color: (1, 0, 0, 1) if root.is_weekday or root.is_holiday else self.background_color
+    on_press:
+        app.day = root.date.day
+        app.month = root.date.month
+        app.year = root.date.year
+        root.parent.parent.parent.manager.current = 'day'
+        root.parent.parent.parent.manager.transition.direction = 'left'
+    BoxLayout:
+        orientation: 'vertical'
+        pos: root.pos
+        Label:
+            text: str(root.day)
+            text_align: 'center'
+            font_size: 15
+        Label:
+            text: f"""Noite:\n  {root.letter_night_1}: {root.name_night_1}\n  {root.letter_night_2}: {root.name_night_2}"""
+            font_size: 15
+        Label:
+            text: f"""Dia:\n  {root.letter_day_1}: {root.name_day_1}\n  {root.letter_day_2}: {root.name_day_2}"""
+            font_size: 15
+
+<CalendarScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        ActionBar:
+            ActionView:
+                ActionPrevious:
+                    title: 'Calendário'
+                    on_press: 
+                        root.manager.current = 'menu'
+                        root.manager.transition.direction = 'right'
+                ActionButton:
+                    text: '<-'
+                    on_release: calendar_page.go_to_last_month()
+                ActionLabel:
+                    text: calendar_page.text_month_year
+                    size_hint_x: None
+                    width: 70
+                ActionButton:
+                    text: '->'
+                    on_release: calendar_page.go_to_next_month()
+                           
+        CalendarPage:
+            id: calendar_page
+
+
+<DayScreen>:
+    day: app.day
+    month: app.month
+    year: app.year
+
+    on_pre_enter: self.get_day_data()
+
+    FloatLayout:
+        BoxLayout:
+            orientation: 'vertical'
+            pos: root.pos
+            ActionBar:
+                ActionView:
+                    ActionPrevious:
+                        title: f'{root.day}/{root.month}/{root.year}'
+                        on_press: 
+                            root.manager.current = 'calendar'
+                            root.manager.transition.direction = 'right'
+                    ActionLabel:
+                        text: 'Feriado'
+                        font_size: 35
+                    ActionCheck:
+                        size_hint_x: 0.1
+                        on_active:
+                            root.is_holiday = self.active
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: 'Noite:'
+                    font_size: 50
+                TextInput:
+                    text: root.letter_night_1
+                TextInput:
+                    text: root.letter_night_2
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: 'Dia:'
+                    font_size: 50
+                TextInput:
+                    text: root.letter_day_1
+                TextInput:
+                    text: root.letter_day_2
+            Button:
+                text: 'Salvar'
+                font_size: 50
+                size_hint_y: None
+                hight: 75
+

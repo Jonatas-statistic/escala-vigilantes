@@ -1,59 +1,45 @@
 from kivy.app import App
 
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.gridlayout import GridLayout
-
-from kivy.uix.button import Button
-
+from kivy.uix.screenmanager import ScreenManager
 from kivy.properties import (
-    ObjectProperty, StringProperty
+    BooleanProperty, NumericProperty, StringProperty
 )
 
+from screens.menu import MenuScreen
+from screens.vigilants import VigilantsScreen
+from screens.calendar import CalendarScreen
+from screens.day import DayScreen
 
-##### WIDGETS #####
-class MenuButton(Button):
-    pass
-
-
-class VigilantName(BoxLayout):
-    letter = StringProperty('')
-    name = StringProperty('')
-
-
-class DayButton(Button):
-    pass
-###################
-
-##### PAGES #####
-class MenuPage(BoxLayout):
-    pass
-
-
-class VigilantsPage(BoxLayout):
-    
-    def __init__(self, *args, **kwargs):
-        super(VigilantsPage, self).__init__(*args, **kwargs)
-        letters = 'ABCDE'
-        for letter in letters:
-            self.add_widget(VigilantName(letter=letter))
-
-
-class CalendarPage(GridLayout):
-    
-    def __init__(self, *args, **kwargs):
-        super(CalendarPage, self).__init__(*args, **kwargs)
-        self.cols = 7
-        for day in range(1, 36):
-            self.add_widget(DayButton())
-#################
-
-class EscalaLayout(BoxLayout):
-    current_page = ObjectProperty(None)
+from database.db_functions import create_tables, insert_letters
 
 
 class EscalaApp(App):
+    # ScreenDay's date
+    day = NumericProperty(None)
+    month = NumericProperty(None)
+    year = NumericProperty(None)
+
+    # screen manager
+    sm = ScreenManager()
+
     def build(self):
-        return CalendarPage()
+        try:
+            create_tables()
+        except:
+            print('Error! Cannot create a database connection.')
+        
+        try:
+            insert_letters()
+        except:
+            print('Error! Cannot insert vigilants letters in database.')
+            
+        self.sm.add_widget(MenuScreen(name='menu'))
+        self.sm.add_widget(VigilantsScreen(name='vigilants'))
+        self.sm.add_widget(CalendarScreen(name='calendar'))
+        self.sm.add_widget(DayScreen(name='day'))
+
+        return self.sm
+
 
 
 if __name__ == '__main__':

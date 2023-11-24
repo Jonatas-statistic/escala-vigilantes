@@ -131,3 +131,6 @@ dmypy.json
 
 # Sandbox
 sandbox/
+
+# Database
+*.db
